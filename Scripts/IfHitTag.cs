@@ -1,41 +1,39 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class IfHitTag : MonoBehaviour
 {
     // Start is called before the first frame update
 
-    public GameObject trashElement;
-    public GameObject trashCan;
-    public GameObject prefab;
-    public Rigidbody rb;
+    private GameObject spawnPos;
 
-    public float speed;
-
-    void Awake ()
+    void Awake()
     {
-
-
+        spawnPos = GameObject.Find("SpawnPos");
     }
 
-        void OnCollisionEnter(Collision col)
+    void OnTriggerEnter(Collider col)
+    {
+        GameObject trash = col.transform.gameObject;
+        Vector3 trashPos = col.transform.position;
+        if (col.tag[col.tag.Length - 1] != tag[tag.Length - 1])
         {
-            if (col.gameObject.CompareTag("TrashCan"))
-            {
-            rb.isKinematic = false;
-
-            Destroy(trashElement);
-
-            for (int i = 0; i < 1; i++)
-                Instantiate(prefab, new Vector3(i * -0.06f, 1.9704f, 10.9f), Quaternion.identity);
-
-            trashCan.transform.Rotate(Vector3.up * speed * 360);
-
-            Debug.Log("hit");
-
+            float spawnX = spawnPos.transform.position.x;
+            float spawnY = spawnPos.transform.position.y;
+            float spawnZ = spawnPos.transform.position.z;
+            col.transform.position = new Vector3(Random.Range(spawnX, spawnX + .6f), spawnY, Random.Range(spawnZ, spawnZ - .25f));
         }
-
+        else
+        {
+            Destroy(col.transform.gameObject);
+            GameObject eSystem = GameObject.FindWithTag("EventSystem");
+            GameControl gameScore = eSystem.GetComponent<GameControl>();
+            gameScore.score++;
         }
+        //trashCan.transform.Rotate(Vector3.up * speed * 360);
+        //}
+    }
 
 }
